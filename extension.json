@@ -1,0 +1,99 @@
+{
+    "identifier": "novov.nim",
+    "name": "Nim",
+    "organization": "novov",
+    "description": "Adds syntax highlighting, completions, and other functionality for the Nim language.",
+    "version": "0.1",
+    "categories": ["languages"],
+    "bugs": "https://github.com/mirnovov/nova-nim/issues",
+    "repository": "https://github.com/mirnovov/nova-nim",
+    "license": "MIT",
+    
+    "main": "main.js",
+    "min_runtime": "8.0",
+    
+    "entitlements": {
+        "process": true,
+        "filesystem": "readonly"
+    },
+    
+    "config": [
+        {
+            "key": "novov.nim.lsppath",
+            "title": "LSP path",
+            "description": "The location of the NimLSP binary.",
+            "type": "path",
+            "placeholder": "~/.nimble/bin/nimlsp"
+        },
+        {
+            "key": "novov.nim.nimcheck",
+            "title": "Use Nim check",
+            "description": "Detect errors and issues using Nim's check tool. If diagnostics are duplicated, disable this.",
+            "type": "boolean",
+            "default": true
+        }
+    ],
+    
+    "configWorkspace": [
+        {
+            "key": "novov.nim.projectfile",
+            "title": "Project file",
+            "description": "The project file to use for non-LSP functionality. Takes effect on restart.",
+            "type": "path",
+            "placeholder": "Auto-detect"
+        },
+        {
+            "title": "Nimpretty",
+            "description": "Use the Nimpretty tool to consistently format your Nim code.",
+            "type": "section",
+            "children": [
+                {
+                    "key": "novov.nim.autoprettify",
+                    "title": "Use on save",
+                    "type": "boolean",
+                    "default": false
+                },
+                {
+                    "key": "novov.nim.indent",
+                    "title": "Indentation level",
+                    "type": "number",
+                    "description": "When set to 0, the indentation level will be automatically detected.",
+                    "default": 0,
+                    "min": 0,
+                    "max": 32
+                },
+                {
+                    "key": "novov.nim.maxwidth",
+                    "title": "Maximum code width",
+                    "type": "number",
+                    "default": 80,
+                    "min": 40,
+                    "max": 1000
+                }
+            ]   
+        }
+    ],
+    
+    "commands": {
+        "editor": [
+            {
+                "title": "Format with Nimpretty",
+                "command": "novov.nim.prettify",
+                "when": "editorHasFocus",
+                "filters": { "syntaxes": ["nim"] }
+            }
+        ],
+        "extensions": [
+            {
+                "title": "Reload Nim LSP",
+                "command": "novov.nim.reload",
+                "filters": { "syntaxes": ["nim"] }
+            }
+        ]
+    },
+    
+    "activationEvents": [
+        "onLanguage:nim",
+        "onWorkspaceContains:*.nimble"
+    ]
+}

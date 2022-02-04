@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<syntax name="nim">
+	<meta>
+		<name>Nim</name>
+		<type>compiled</type>
+		<preferred-file-extension>nim</preferred-file-extension>
+	</meta>
+
+	<detectors>
+		<extension priority="1.0">nim,nimble</extension>
+	</detectors>
+
+	<indentation>
+		<increase>
+			<expression>(\s*(proc|func|macro|template).*\(.*\).* =
+				|.*(if|elif|except|block|for|case|of|while|when) .*:
+				|\s*(try|else|once):
+				|\s*type .* =.*object.*)
+			</expression>
+		</increase>
+	</indentation>
+
+	<comments>
+		<single>
+			<expression>#</expression>
+		</single>
+		<multiline>
+			<starts-with>
+					<expression>#[</expression>
+			</starts-with>
+			<ends-with>
+					<expression>]#</expression>
+			</ends-with>
+		</multiline>
+	</comments>
+	
+	<surrounding-pairs>
+		<pair open="{." close=".}" />
+		<pair open="[" close="]" />
+		<pair open="{" close="}" />
+		<pair open="(" close=")" />
+		<pair open="'" close="'" />
+	</surrounding-pairs>
+	
+	<scopes>
+		<include syntax="self" collection="comments" />
+		<include syntax="self" collection="imports" />
+		<include syntax="self" collection="declarations" />
+		<include syntax="self" collection="keywords" />
+		<include syntax="self" collection="values" />
+		<include syntax="self" collection="syntax" />
+		<include syntax="self" collection="identifiers" />
+		<include syntax="self" collection="pragmas" />
+		
+	</scopes>
+	
+	<collections>
+		<collection name="comments">
+			<scope name="nim.comment.single" spell-check="true">
+				<expression>\#([^\[].*)$</expression>
+				<capture number="1" name="nim.comment.content" />
+			</scope>
+			<scope name="nim.comment.block" spell-check="true">
+				<symbol type="comment">
+					<context behavior="subtree" />
+				</symbol>
+				<starts-with>
+					<expression>\#\[</expression>
+				</starts-with>
+				<ends-with>
+					<expression>\]\#</expression>
+				</ends-with>
+			</scope>
+			<scope name="nim.comment.block.documentation" spell-check="true">
+				<symbol type="comment">
+					<context behavior="subtree" />
+				</symbol>
+				<starts-with>
+					<expression>\#\#\[</expression>
+				</starts-with>
+				<ends-with>
+					<expression>\]\#\#</expression>
+				</ends-with>
+			</scope>
+		</collection>
+		
+		<collection name="keywords">
+			<scope name="nim.keyword">
+				<strings suffix="(?!\?)">
+					<string>addr</string>
+					<string>asm</string>
+					<string>await</string>
+					<string>bind</string>
+					<string>block</string>
+					<string>break</string>
+					<string>case</string>
+					<string>cast</string>
+					<string>concept</string>
+					<string>class</string>
+					<string>const</string>
+					<string>continue</string>
+					<string>do</string>
+					<string>discard</string>
+					<string>distinct</string>
+					<string>elif</string>
+					<string>else</string>
+					<string>enum</string>
+					<string>except</string>
+					<string>export</string>
+					<string>extend</string>
+					<string>extends</string>
+					<string>for</string>
+					<string>finally</string>
+					<string>from</string>
+					<string>func</string>
+					<string>if</string>
+					<string>import</string>
+					<string>include</string>
+					<string>let</string>
+					<string>macro</string>
+					<string>method</string>
+					<string>mixin</string>
+					<string>object</string>
+					<string>of</string>
+					<string>proc</string>
+					<string>raise</string>
+					<string>return</string>
+					<string>template</string>
+					<string>try</string>
+					<string>type</string>
+					<string>var</string>
+					<string>using</string>
+					<string>when</string>
+					<string>while</string>
+					<string>with</string>
+					<string>yield</string>
+				</strings>
+			</scope>
+			<scope name="nim.keyword.modifier">
+				<strings suffix="(?!\?)">
+					<string>ptr</string>
+					<string>ref</string>
+					<string>static</string>
+				</strings>
+			</scope>
+			<scope name="nim.keyword.modifier.result">
+				<strings suffix="(?!\?)">
+					<string>result</string>
+				</strings>
+			</scope>
+		</collection>
+		
+		<collection name="values">
+			<scope name="nim.value.null">
+				<expression>nil</expression>
+			</scope>
+			<scope name="nim.value.boolean">
+				<strings>
+					<string>true</string>
+					<string>false</string>
+				</strings>
+			</scope>
+			<scope name="nim.value.number.decimal">
+				<expression>\b\-?[\d_]+(\.[\d_]*)?([eE][+-][\d_]+)?(\'[\w\d]+)?\b</expression>
+			</scope>
+			<scope name="nim.value.number.hexadecimal">
+				<expression>\b\-?0x[a-fA-F\d_]+(\.[a-fA-F\d_]*)?([eE][+-][a-fA-F\d_]+)?(\'[\w\d]+)?\b</expression>
+			</scope>
+			<scope name="nim.value.number.octal">
+				<expression>\b\-?0o[0-7_]+(\.[0-7_]*)?([eE][+-][0-7_]+)?(\'[\w\d]+)?\b</expression>
+			</scope>
+			<scope name="nim.value.number.binary">
+				<expression>\b\-?0b[01_]+(\.[01_]*)?([eE][+-][01_]+)?(\'[\w\d]+)?\b</expression>
+			</scope>
+			<scope name="nim.string.char">
+				<expression>&apos;.+?&apos;</expression>
+			</scope>
+			<scope name="nim.collection.array">
+				<starts-with>
+					<expression>\[</expression>
+					<capture number="0" name="nim.bracket" />
+				</starts-with>
+				<ends-with>
+					<expression>\]</expression>
+					<capture number="0" name="nim.bracket" />
+				</ends-with>
+				<subscopes>
+					<scope name="nim.comma">
+						<expression>,</expression>
+					</scope>
+					<include syntax="self" collection="values"/>
+					<scope name="nim.identifier.type-def">
+						<starts-with>
+							<expression>(?&lt;=\:)</expression>
+						</starts-with>
+						<ends-with>
+							<expression>$|\=|(?=\])</expression>
+						</ends-with>
+						<subscopes>
+							<include syntax="self" collection="comments" />
+							<include syntax="self" collection="keywords" />
+							<include syntax="self" collection="types"/>
+						</subscopes>
+					</scope>
+				</subscopes>
+			</scope>
+			<include syntax="self" collection="strings" />
+		</collection>
+		
+		<collection name="strings">
+			<scope name="nim.string.double-quoted">
+				<starts-with>
+					<expression>(&quot;&quot;&quot;)</expression>
+					<capture number="0" name="nim.string.double-quoted.delimiter" />
+				</starts-with>
+				<ends-with>
+					<expression>(&quot;&quot;&quot;)</expression>
+					<capture number="0" name="nim.string.double-quoted.delimiter" />
+				</ends-with>
+				<subscopes>
+					<scope name="nim.string.double-quoted.escape">
+						<expression>\\(?:[\\prcnlftv\&quot;\&apos;abe]|[0-9]+|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|u\{[0-9a-fA-F]+\})</expression>
+					</scope>
+				</subscopes>
+			</scope>
+			<scope name="nim.string.single-quoted">
+				<starts-with>
+					<expression>(&quot;)</expression>
+					<capture number="0" name="nim.string.single-quoted.delimiter" />
+				</starts-with>
+				<ends-with>
+					<expression>(&quot;)</expression>
+					<capture number="0" name="nim.string.single-quoted.delimiter" />
+				</ends-with>
+				<subscopes>
+					<scope name="nim.string.single-quoted.escape">
+						<expression>\\(?:[\\prcnlftv\&quot;\&apos;abe]|[0-9]+|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|u\{[0-9a-fA-F]+\})</expression>
+					</scope>
+				</subscopes>
+			</scope>
+		</collection>
+		
+		<collection name="syntax">
+			<scope name="nim.operator">
+				<expression>(?:[=\+\-\*&lt;&gt;\@~&amp;%|!?^.:\\]|\b(?:and|or|not|xor|shl|shr|div|mod|in|notin|is|isnot|as)\b)+</expression>
+			</scope>
+			<scope name="nim.comma">
+				<expression>,</expression>
+			</scope>
+		</collection>
+		
+		<collection name="declarations">
+			<scope name="nim.single-var">
+				<starts-with>
+					<expression>(let|const|var)[^\S\r\n]+(\w+)\s*(\:)</expression>
+					<capture number="1" name="nim.keyword"/>
+					<capture number="2" name="nim.identifier"/>
+					<capture number="3" name="nim.type.operator"/>
+				</starts-with>
+				<ends-with>
+					<expression>$|(?=\=)</expression>
+				</ends-with>
+				<subscopes>
+					<include syntax="self" collection="comments" />
+					<include syntax="self" collection="keywords" />
+					<include syntax="self" collection="types"/>
+				</subscopes>
+			</scope>
+			
+			<scope name="nim.definition.var-group">
+				<starts-with>
+					<expression>^(let|const|var)\b</expression>
+					<capture number="1" name="nim.keyword"/>
+				</starts-with>
+				<ends-with>
+					<expression>(?=^\S)</expression>
+				</ends-with>
+			
+				<subscopes>
+					<include syntax="self" collection="comments" />
+					<include syntax="self" collection="pragmas" />
+					<include syntax="self" collection="keywords" />
+					<scope name="nim.identifier.type-def">
+						<starts-with>
+							<expression>(?&lt;=\:)</expression>
+						</starts-with>
+						<ends-with>
+							<expression>$|\=</expression>
+						</ends-with>
+						<subscopes>
+							<include syntax="self" collection="comments" />
+							<include syntax="self" collection="keywords" />
+							<include syntax="self" collection="types"/>
+						</subscopes>
+					</scope>
+					<include syntax="self" collection="syntax" />
+					<include syntax="self" collection="identifiers" />
+					<include syntax="self" collection="values" />
+				</subscopes>
+			</scope>
+		
+			<scope name="nim.definition.single-type.class">
+				<symbol type="type" scope="global">
+					<context behavior="subtree"/>
+				</symbol>
+				<starts-with>
+					<expression>^(type)[^\S\r\n]+(\w+)(\*)?(?=(\[.*\])?(\s+\{\..+\.\})?\s+\=)</expression>
+					<capture number="1" name="nim.keyword"/>
+					<capture number="2" name="nim.identifier.type.class"/>
+					<capture number="3" name="nim.type.operator"/>
+				</starts-with>
+				<ends-with>
+					<expression>^(?=\w|\n\n)</expression>
+				</ends-with>
+				<subscopes>
+					<include syntax="self" collection="decl-parts"/>
+				</subscopes>
+			</scope>
+		
+			<scope name="nim.definition.type-group">
+				<starts-with>
+					<expression>^(type)\b</expression>
+					<capture number="1" name="nim.keyword"/>
+				</starts-with>
+				<ends-with>
+					<expression>(?=^\S)</expression>
+				</ends-with>
+
+				<subscopes>
+					<scope name="nim.definition.class">
+						<symbol type="type" scope="global">
+							<context behavior="subtree"/>
+						</symbol>
+						<starts-with>
+							<expression>^(\s+)(\w+)(\*)?(?=(\[.*\])?(\s+\{\..+\.\})?\s+\=)</expression>
+							<capture number="2" name="nim.identifier.type.class"/>
+							<capture number="3" name="nim.type.operator"/>
+						</starts-with>
+						<ends-with>
+							<template>^(?!\1\s+)</template>
+						</ends-with>
+						<subscopes>
+							<include syntax="self" collection="decl-parts"/>
+						</subscopes>
+					</scope>					
+				</subscopes>
+			</scope>
+			
+			<scope name="nim.definition.function">
+				<symbol type="function" scope="global">
+					<context behavior="whitespace" />
+				</symbol>
+				<starts-with>
+					<expression>(proc|func|method|template|macro|iterator|converter)\s+((\`[^\s\`]+\`)|\w+)(\*)?</expression>
+					<capture number="1" name="nim.keyword"/>
+					<capture number="2" name="nim.function.identifier"/>
+					<capture number="3" name="nim.function.operator"/>
+				</starts-with>
+				<ends-with>
+					<expression>(?&lt;=\))(\=)</expression>
+					<capture number="1" name="nim.function.operator"/>
+				</ends-with>
+				<subscopes anchored="true">
+					<include syntax="self" collection="generics" optional="true" />
+				
+					<scope name="nim.arguments">
+						<starts-with>
+								<expression>\(</expression>
+								<capture number="0" name="nim.bracket" />
+						</starts-with>
+						<ends-with>
+								<expression>\)</expression>
+								<capture number="0" name="nim.bracket" />
+						</ends-with>
+						<subscopes>
+							<include syntax="self" collection="comments" />
+							<scope name="nim.separator">
+									<expression>(,|;)</expression>
+							</scope>
+							<scope name="nim.identifier.argument">
+									<symbol type="argument" />
+									<expression>(?&lt;![\=:])\b(\w*)\b</expression>
+							</scope>
+							<scope name="nim.identifier.type" optional="true">
+								<starts-with>
+									<expression>\:</expression>
+									<capture number="0" name="nim.operator" />
+								</starts-with>
+								<ends-with>
+									<expression>(?=\)|\,|\=|\;)</expression>
+								</ends-with>
+								<subscopes>
+									<include syntax="self" collection="comments" repeat="true" />
+									<include syntax="self" collection="keywords" repeat="true" />
+									<include syntax="self" collection="types" repeat="true" />
+								</subscopes>
+							</scope>
+							<include syntax="self" collection="values" />
+							<include syntax="self" collection="syntax" />
+						</subscopes>
+					</scope>
+					
+					<scope name="nim.return-type" optional="true">
+						<starts-with>
+							<expression>\:</expression>
+							<capture number="0" name="nim.operator" />
+						</starts-with>
+						<ends-with>
+							<expression>\=|(?=\{.)|$</expression>
+						</ends-with>
+						<subscopes>
+							<include syntax="self" collection="comments" repeat="true" />
+							<include syntax="self" collection="keywords" repeat="true" />
+							<include syntax="self" collection="types" repeat="true" />
+						</subscopes>
+					</scope>
+					
+					<include syntax="self" collection="pragmas" optional="true" />
+				</subscopes>
+			</scope>
+		</collection>
+		
+		<collection name="decl-parts">
+			<scope name="nim.operator.equals">
+				<expression>=</expression>
+			</scope>
+			<include syntax="self" collection="comments" />
+			<include syntax="self" collection="keywords" />
+			<include syntax="self" collection="pragmas"/>
+			<scope name="nim.identifier.type-def">
+				<starts-with>
+					<expression>((?&lt;=\:)|(?&lt;=object\sof))\s+</expression>
+				</starts-with>
+				<ends-with>
+					<expression>$|\=</expression>
+				</ends-with>
+				<subscopes>
+					<include syntax="self" collection="comments" />
+					<include syntax="self" collection="keywords" />
+					<include syntax="self" collection="types"/>
+				</subscopes>
+			</scope>
+			<include syntax="self" collection="values" repeat="true" />
+			<scope name="nim.identifier.property">
+				<symbol type="property" scope="global"/>
+				 <expression>\w+(\*)?(\:)?</expression>
+				<capture number="1" name="nim.type.operator"/>
+				<capture number="2" name="nim.type.operator"/>
+			</scope>
+		</collection>
+		
+		<collection name="pragmas">
+			<scope name="nim.identifier.processing">
+				<starts-with>
+					<expression>{\.</expression>
+					<capture number="0" name="nim.processing.bracket" />
+				</starts-with>
+				<ends-with>
+					<expression>\.}</expression>
+					<capture number="0" name="nim.processing.bracket" />
+				</ends-with>
+				<subscopes>
+					<include syntax="self" collection="comments" />
+					<include syntax="self" collection="values"/>
+				</subscopes>
+			</scope>
+		</collection>
+		
+		<collection name="types">
+			<include syntax="self" collection="comments" />
+			<scope name="nim.identifier.type.core">
+				<strings>
+					<string>any</string>
+					<string>array</string>
+					<string>auto</string>
+					<string>bool</string>
+					<string>byte</string>
+					<string>char</string>
+					<string>float</string>
+					<string>float32</string>
+					<string>float64</string>
+					<string>int</string>
+					<string>int8</string>
+					<string>int16</string>
+					<string>int32</string>
+					<string>int64</string>
+					<string>openArray</string>
+					<string>pointer</string>
+					<string>range</string>
+					<string>seq</string>
+					<string>set</string>
+					<string>string</string>
+					<string>typedesc</string>
+					<string>uint</string>
+					<string>uint8</string>
+					<string>uint16</string>
+					<string>uint32</string>
+					<string>uint64</string>
+					<string>untyped</string>
+					<string>varargs</string>
+					<string>void</string>
+				</strings>
+			</scope>
+			
+			<scope name="nim.operator.dot">
+				<expression>\.</expression>
+			</scope>
+			<scope name="nim.array-type">
+				<starts-with>
+					<expression>(\[|\()</expression>
+					<capture number="0" name="nim.array-type.bracket" />
+				</starts-with>
+				<ends-with>
+					<expression>(\]|\))</expression>
+					<capture number="0" name="nim.array-type.bracket" />
+				</ends-with>
+				<subscopes>
+					<scope name="nim.comma.bracket"><!-- hack so it's not the type colour -->
+						<expression>,</expression>
+					</scope>
+					<include syntax="self" collection="types" />
+					<include syntax="self" collection="values" />
+				</subscopes>
+			</scope>
+			
+			<include syntax="self" collection="values" />
+			
+			<scope name="nim.identifier.type">
+				<expression>(\w*)(\[\])?</expression>
+				<capture number="2" name="nim.operator.array" />
+			</scope>
+			
+		</collection>
+		
+		<collection name="identifiers">
+			<scope name="nim.identifier.property">
+				<expression>(?&lt;=[^\{]\.)(\w+)\b(?!\(|[^\S\r\n]+[=\+\-\*&lt;&gt;\@~&amp;%|!?^.:\\]\"|\n)</expression>
+			</scope>
+			<scope name="nim.identifier.method">
+				<expression>(?&lt;=\.)(\w*)(?=\()</expression>
+			</scope>
+			<scope name="nim.identifier.function">
+				<expression>(?&lt;!\.)(\w*)(?=\()</expression>
+			</scope>
+			<scope name="nim.identifier.function.unbracketed">
+				<expression>(?&lt;=\s)(\w*)(?=[^\S\r\n][\w]|[^\S\r\n]+[=\+\-\*&lt;&gt;\@~&amp;%|!?^.:\\]\")</expression>
+			</scope>
+			<scope name="nim.identifier.function.string">
+				<expression>\w+(?=")</expression>
+			</scope>
+			
+		</collection>
+		
+		<collection name="generics">
+			<scope name="nim.type.generic" optional="true">
+				<starts-with>
+					<expression>\[</expression>
+					<capture number="0" name="nim.bracket" />
+				</starts-with>
+				<ends-with>
+					<expression>\]</expression>
+					<capture number="0" name="nim.bracket" />
+				</ends-with>
+				<subscopes>
+					<scope name="nim.comma">
+						<expression>,</expression>
+					</scope>
+					<include syntax="self" collection="types" />
+				</subscopes>
+			</scope>
+		</collection>
+		
+		<collection name="imports">
+			<scope name="nim.import">
+				<starts-with>
+					<expression>import</expression>
+					<capture number="0" name="nim.keyword.statement" />
+				</starts-with>
+				<ends-with>
+					<expression>$</expression>
+				</ends-with>
+				<subscopes>
+					<include syntax="self" collection="comments" />
+					<scope name="nim.keyword.modifier">
+						<expression>\bas\b</expression>
+					</scope>
+					<scope name="nim.import.identifier.symbol">
+						<symbol type="package" scope="external" />
+						<expression>\w+</expression>
+					</scope>
+					<scope name="nim.separator">
+						<expression>,</expression>
+					</scope>
+				</subscopes>
+			</scope>
+			<scope name="nim.from">
+				<starts-with>
+					<expression>(from)\s+(\w+)\s+(import)</expression>
+					<capture number="1" name="nim.keyword.statement" />
+					<capture number="2" name="nim.identifier.package" />
+					<capture number="3" name="nim.keyword.statement" />
+				</starts-with>
+				<ends-with>
+					<expression>$</expression>
+				</ends-with>
+				<subscopes>
+					<include syntax="self" collection="comments" />
+					<scope name="nim.operator">
+						<expression>\*</expression>
+					</scope>
+					<scope name="nim.keyword.modifier">
+						<expression>\bas\b</expression>
+					</scope>
+					<scope name="nim.import.identifier.symbol">
+						<symbol type="package" scope="external" />
+						<expression>([a-zA-Z][a-zA-Z0-9\-_\.]+)</expression>
+					</scope>
+					<scope name="nim.separator">
+						<expression>,</expression>
+					</scope>
+				</subscopes>
+			</scope>
+		</collection>
+		
+	</collections>
+</syntax>
